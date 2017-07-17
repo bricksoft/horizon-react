@@ -77,7 +77,7 @@ export default class Connector extends Component {
     });
   };
 
-  render() {
+  render() {
     return this.state.hzStatus.type === 'ready'
     ? this.renderConnected()
     : this.renderLoading();

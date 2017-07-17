@@ -98,7 +98,7 @@ export default function subscribe(opts = {}) {
         return null;
       }
 
-      getObjectWithDataKeys(keys) {
+      getObjectWithDataKeys(keys) {
         return keys.reduce((acc, name) => {
           acc[name] = [];
           return acc;
@@ -115,11 +115,11 @@ export default function subscribe(opts = {}) {
           this.subscribeToArray(props);
         } else if (isPlainObject(mapDataToProps)) {
           this.subscribeToObject(props);
-        } else if (typeof mapDataToProps === 'function') {
+        } else if (typeof mapDataToProps === 'function') {
           this.subscribeToFunction(props);
         }
 
-        this.setState({ subscribed: true });
+        this.setState({ subscribed: true });
       }
 
       /**
@@ -133,7 +133,7 @@ export default function subscribe(opts = {}) {
         });
 
         if (updateState) {
-          this.setState({ subscribed: false });
+          this.setState({ subscribed: false });
         }
       }
 
@@ -147,7 +147,7 @@ export default function subscribe(opts = {}) {
        */
       subscribeToArray(props) {
         mapDataToProps.forEach(
-          ({ query, name }) => {
+          ({ query, name }) => {
             this.handleQuery(query(this.client, props), name);
           }
         );
@@ -183,7 +183,7 @@ export default function subscribe(opts = {}) {
        * const mapDataToProps = (props) => ({
        *   todos: {
        *     collection: 'todos',
-       *     query: { name: props.name }
+       *     query: { name: props.name }
        *   }
        * });
        *
@@ -197,7 +197,7 @@ export default function subscribe(opts = {}) {
           let queryResult;
           const { collection, c, query } = subscribeTo[name];
 
-          const horizonCollection = this.client(collection || c);
+          const horizonCollection = this.client(collection || c);
 
           if (query && Object.keys(query).length) {
             queryResult = horizonCollection.findAll(query);
@@ -243,7 +243,7 @@ export default function subscribe(opts = {}) {
        * according data from the app state instead of setting up a separate listener.
        */
       handleData = (name, docs) => {
-        let data = docs || emptyArray;
+        let data = docs || emptyArray;
 
         // always return an array, even if there's just one document
         if (isPlainObject(docs)) {

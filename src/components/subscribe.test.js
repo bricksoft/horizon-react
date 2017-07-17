@@ -236,7 +236,7 @@ describe('#mapDataToProps(function):', (test) => {
 
   test('it should call findAll for returned queryParams', (t) => {
     t.plan(1);
-    const query = { name: 'test' };
+    const query = { name: 'test' };
 
     function TestHorizonMock() {
       return () => ({
