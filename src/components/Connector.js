@@ -1,4 +1,6 @@
-import { PropTypes, Component, createElement, Children } from 'react';
+import { Component, createElement, Children } from 'react';
+import PropTypes from 'prop-types';
+
 import Horizon from '@horizon/client';
 
 /**

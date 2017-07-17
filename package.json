@@ -86,7 +86,8 @@
   },
   "dependencies": {
     "is-plain-object": "^2.0.1",
-    "lodash.isequal": "^4.1.4"
+    "lodash.isequal": "^4.1.4",
+    "prop-types": "~15.5.10"
   },
   "peerDependencies": {
     "@horizon/client": "^1.0.1 || ^2.0.0",

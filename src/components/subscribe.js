@@ -1,6 +1,7 @@
 import isEqual from 'lodash.isequal';
 import isPlainObject from 'is-plain-object';
-import { Component, PropTypes, createElement } from 'react';
+import { Component, createElement } from 'react';
+import PropTypes from 'prop-types';
 
 import requireResolve from '../utils/requireResolve';
 
