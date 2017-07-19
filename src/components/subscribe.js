@@ -3,8 +3,6 @@ import isPlainObject from 'is-plain-object';
 import { Component, createElement } from 'react';
 import PropTypes from 'prop-types';
 
-import requireResolve from '../utils/requireResolve';
-
 const emptyArray = [];
 const getDisplayName = WrappedComponent => WrappedComponent.displayName ||
   WrappedComponent.name ||
