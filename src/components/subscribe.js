@@ -111,9 +111,7 @@ export default function subscribe(opts = {}) {
        * time data changes.
        */
       subscribe(props) {
-        if (Array.isArray(mapDataToProps)) {
-          this.subscribeToArray(props);
-        } else if (isPlainObject(mapDataToProps)) {
+        if (isPlainObject(mapDataToProps)) {
           this.subscribeToObject(props);
         } else if (typeof mapDataToProps === 'function') {
           this.subscribeToFunction(props);
@@ -138,22 +136,6 @@ export default function subscribe(opts = {}) {
       }
 
       /**
-       * Query is written as an array.
-       *
-       * const mapDataToProps = [
-       *   { name: 'todos', query: hz => hz('todos').limit(5) },
-       *   { name: 'users', query: hz => hz('users').limit(5) }
-       * ];
-       */
-      subscribeToArray(props) {
-        mapDataToProps.forEach(
-          ({ query, name }) => {
-            this.handleQuery(query(this.client, props), name);
-          }
-        );
-      }
-
-      /**
        * Query is written as an object.
        *
        * Example:
@@ -167,46 +149,19 @@ export default function subscribe(opts = {}) {
         Object.keys(mapDataToProps).forEach(
           name => {
             const query = mapDataToProps[name];
-
             this.handleQuery(query(this.client, props), name);
           }
         );
       }
 
-      /**
-       * Query is written as a function which accepts "props".
-       * We execute the function to get back an object with
-       * collection and optional query key.
-       *
-       * Example:
-       *
-       * const mapDataToProps = (props) => ({
-       *   todos: {
-       *     collection: 'todos',
-       *     query: { name: props.name }
-       *   }
-       * });
-       *
-       * @param {String} collection is the name of the collection you want to access
-       * @param {Object|String} query is the query object which will be passed to "findAll"
-       */
       subscribeToFunction(props) {
-        const subscribeTo = mapDataToProps(props);
-
-        for (const name of Object.keys(subscribeTo)) {
-          let queryResult;
-          const { collection, c, query } = subscribeTo[name];
-
-          const horizonCollection = this.client(collection || c);
-
-          if (query && Object.keys(query).length) {
-            queryResult = horizonCollection.findAll(query);
-          } else {
-            queryResult = horizonCollection;
+        const data = mapDataToProps(props);
+        Object.keys(data).forEach(
+          name => {
+            const query = data[name];
+            this.handleQuery(query(this.client, props), name);
           }
-
-          this.handleQuery(queryResult, name);
-        }
+        );
       }
 
       /**

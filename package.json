@@ -1,5 +1,5 @@
 {
-  "name": "horizon-react",
+  "name": "@simonlc/horizon-react",
   "version": "0.5.0",
   "description": "React bindings for horizon",
   "main": "./lib/index.js",
