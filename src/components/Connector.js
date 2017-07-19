@@ -43,9 +43,6 @@ export default class Connector extends Component {
     ? props.horizon
     : Horizon(props.horizonProps);
 
-    // the redux connection
-    this.store = props.store;
-
     initialState.hzStatus = props.horizon
     ? props.horizon.status().getValue()
     : false;

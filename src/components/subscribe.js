@@ -10,16 +10,6 @@ const getDisplayName = WrappedComponent => WrappedComponent.displayName ||
   WrappedComponent.name ||
   'Component';
 
-const reduxIsAvailable = () => {
-  try {
-    requireResolve('redux');
-    requireResolve('react-redux');
-    return true;
-  } catch (e) {} // eslint-disable-line
-
-  return false;
-};
-
 /**
  * Subscribes to data specified in mapData
  */
@@ -47,13 +37,10 @@ export default function subscribe(opts = {}) {
         this.data = {};
         this.mutations = {};
 
-        this.useRedux = reduxIsAvailable() && this.store;
-
         this.state = {
           subscribed: false,
           updates: 0,
           data: this.getDataNames(props),
-          storeState: this.useRedux ? Object.assign({}, this.store.getState()) : {}
         };
       }
 
@@ -191,11 +178,6 @@ export default function subscribe(opts = {}) {
        * When new data comes in, we update the state of this component,
        * this will cause a rerender of it's child component with the new
        * data in props.
-       *
-       * @TODO this is probably the place where the data should be propagated
-       * to the redux store. If other components subscribe with the same query,
-       * they should find that there's already a query listening and just grab the
-       * according data from the app state instead of setting up a separate listener.
        */
       handleData = (name, docs) => {
         let data = docs || emptyArray;
@@ -212,22 +194,6 @@ export default function subscribe(opts = {}) {
           }
         });
       };
-    }
-
-    if (reduxIsAvailable()) {
-      /**
-       * Pass options to redux "connect" so there's no need to use
-       * two wrappers in application code.
-       */
-      const { mapStateToProps, mapDispatchToProps, mergeProps, options } = opts;
-      const redux = require('react-redux');
-
-      return redux.connect(
-        mapStateToProps,
-        mapDispatchToProps,
-        mergeProps,
-        options
-      )(DataSubscriber);
     }
 
     return DataSubscriber;
