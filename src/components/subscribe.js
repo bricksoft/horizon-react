@@ -4,9 +4,8 @@ import { Component, createElement } from 'react';
 import PropTypes from 'prop-types';
 
 const emptyArray = [];
-const getDisplayName = WrappedComponent => WrappedComponent.displayName ||
-  WrappedComponent.name ||
-  'Component';
+const getDisplayName = WrappedComponent =>
+  WrappedComponent.displayName || WrappedComponent.name || 'Component';
 
 /**
  * Subscribes to data specified in mapData
@@ -14,29 +13,27 @@ const getDisplayName = WrappedComponent => WrappedComponent.displayName ||
 export default function subscribe(opts = {}) {
   const { mapDataToProps } = opts;
 
+  // TODO Get real data here, instead of checkign for function or object in component
+
   delete opts.mapDataToProps;
 
-  return (TargetComponent) => {
+  return TargetComponent => {
     class DataSubscriber extends Component {
       // make sure react prints parent component name on error/warnings
       static displayName = `subscribe(DataSubscriber(${getDisplayName(TargetComponent)}))`;
 
       static contextTypes = {
         horizon: PropTypes.func,
-        store: PropTypes.object
       };
 
       constructor(props, context) {
         super(props, context);
 
         this.client = props.client || context.horizon;
-        this.store = props.store || context.store;
         this.subscriptions = {};
         this.data = {};
-        this.mutations = {};
 
         this.state = {
-          subscribed: false,
           updates: 0,
           data: this.getDataNames(props),
         };
@@ -53,41 +50,34 @@ export default function subscribe(opts = {}) {
       }
 
       componentWillUnmount() {
-        // make sure to dispose all subscriptions
-        this.unsubscribe(false);
+        this.unsubscribe();
       }
 
       render() {
         return createElement(TargetComponent, {
           ...this.props,
           ...this.state.data,
-          horizon: this.client
+          horizon: this.client,
         });
       }
 
       getDataNames(props) {
-        if (Array.isArray(mapDataToProps)) {
-          return mapDataToProps.reduce(
-            (acc, s) => { acc[s.name] = []; return acc; },
-            {}
-          );
-        } else if (isPlainObject(mapDataToProps)) {
-          return this.getObjectWithDataKeys(
-            Object.keys(mapDataToProps)
-          );
+        if (isPlainObject(mapDataToProps)) {
+          return this.getObjectWithDataKeys(Object.keys(mapDataToProps));
         } else if (typeof mapDataToProps === 'function') {
-          return this.getObjectWithDataKeys(
-            Object.keys(mapDataToProps(props))
-          );
+          return this.getObjectWithDataKeys(Object.keys(mapDataToProps(props)));
         }
         return null;
       }
 
       getObjectWithDataKeys(keys) {
-        return keys.reduce((acc, name) => {
-          acc[name] = [];
-          return acc;
-        }, {});
+        return keys.reduce(
+          (acc, name) => {
+            acc[name] = [];
+            return acc;
+          },
+          {},
+        );
       }
 
       /**
@@ -101,23 +91,17 @@ export default function subscribe(opts = {}) {
         } else if (typeof mapDataToProps === 'function') {
           this.subscribeToFunction(props);
         }
-
-        this.setState({ subscribed: true });
       }
 
       /**
        * Unsubscribe from all subscriptions.
        */
-      unsubscribe(updateState = true) {
-        Object.keys(this.subscriptions).forEach(k => {
-          if (this.subscriptions[k].subscription.dispose) {
-            this.subscriptions[k].subscription.dispose();
+      unsubscribe() {
+        Object.keys(this.subscriptions).forEach(key => {
+          if (this.subscriptions[key].subscription.dispose) {
+            this.subscriptions[key].subscription.dispose();
           }
         });
-
-        if (updateState) {
-          this.setState({ subscribed: false });
-        }
       }
 
       /**
@@ -131,22 +115,18 @@ export default function subscribe(opts = {}) {
        * };
        */
       subscribeToObject(props) {
-        Object.keys(mapDataToProps).forEach(
-          name => {
-            const query = mapDataToProps[name];
-            this.handleQuery(query(this.client, props), name);
-          }
-        );
+        Object.keys(mapDataToProps).forEach(name => {
+          const query = mapDataToProps[name];
+          this.handleQuery(query(this.client, props), name);
+        });
       }
 
       subscribeToFunction(props) {
         const data = mapDataToProps(props);
-        Object.keys(data).forEach(
-          name => {
-            const query = data[name];
-            this.handleQuery(query(this.client, props), name);
-          }
-        );
+        Object.keys(data).forEach(name => {
+          const query = data[name];
+          this.handleQuery(query(this.client, props), name);
+        });
       }
 
       /**
@@ -165,10 +145,8 @@ export default function subscribe(opts = {}) {
         }
 
         this.subscriptions[name] = {
-          subscription: query
-            .watch()
-            .forEach(this.handleData.bind(this, name)),
-          query: query._query // eslint-disable-line no-underscore-dangle
+          subscription: query.watch().forEach(this.handleData.bind(this, name)),
+          query: query._query, // eslint-disable-line no-underscore-dangle
         };
       }
 
@@ -181,6 +159,7 @@ export default function subscribe(opts = {}) {
         let data = docs || emptyArray;
 
         // always return an array, even if there's just one document
+        // TODO Only if query is findAll, not find?
         if (isPlainObject(docs)) {
           data = [docs];
         }
@@ -188,8 +167,8 @@ export default function subscribe(opts = {}) {
         this.setState({
           data: {
             ...this.state.data,
-            [name]: data
-          }
+            [name]: data,
+          },
         });
       };
     }

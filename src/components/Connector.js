@@ -9,11 +9,6 @@ import Horizon from '@horizon/client';
  */
 export default class Connector extends Component {
   static propTypes = {
-    store: PropTypes.shape({
-      subscribe: PropTypes.func.isRequired,
-      dispatch: PropTypes.func.isRequired,
-      getState: PropTypes.func.isRequired
-    }),
     horizonProps: PropTypes.object,
     horizon: PropTypes.func,
     children: PropTypes.element.isRequired
@@ -21,16 +16,15 @@ export default class Connector extends Component {
 
   static defaultProps = {
     horizonProps: {},
-    store: {
-      subscribe() {},
-      dispatch() {},
-      getState() { return {}; }
-    }
+  };
+
+  static contextTypes = {
+    store: PropTypes.object,
   };
 
   static childContextTypes = {
     horizon: PropTypes.func,
-    store: PropTypes.object
+    store: PropTypes.object,
   };
 
   constructor(props, context) {
@@ -53,7 +47,7 @@ export default class Connector extends Component {
   getChildContext() {
     return {
       horizon: this.horizon,
-      store: this.store
+      store: this.context.store,
     };
   }
 
@@ -76,17 +70,7 @@ export default class Connector extends Component {
 
   render() {
     return this.state.hzStatus.type === 'ready'
-    ? this.renderConnected()
-    : this.renderLoading();
-  }
-
-  renderConnected() {
-    return Children.only(this.props.children);
-  }
-
-  renderLoading() {
-    return this.props.loadingComponent
-    ? createElement(this.props.loadingComponent)
+    ? Children.only(this.props.children)
     : null;
   }
 }

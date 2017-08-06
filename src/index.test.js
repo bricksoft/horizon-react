@@ -6,7 +6,6 @@ describe('interface:', (test) => {
   [
     'Connector',
     'subscribe',
-    'utils'
   ].forEach((key) => {
     test(`it should export ${key}`, (t) => {
       t.true(horizonClient.hasOwnProperty(key));
